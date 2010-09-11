@@ -13,15 +13,11 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "finchbot"
-  gem.summary = %Q{TODO: one-line summary of your gem}
+  gem.summary = %Q{Darwin would be proud.}
   gem.description = %Q{TODO: longer description of your gem}
   gem.email = "harry@skylightlabs.ca"
   gem.homepage = "http://github.com/hornairs/finchbot"
   gem.authors = ["Harry Brundage"]
-  # Include your dependencies below. Runtime dependencies are required when using your gem,
-  # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
-  #  spec.add_runtime_dependency 'jabber4r', '> 0.1'
-  #  spec.add_development_dependency 'rspec', '> 1.2.3'
   gem.add_development_dependency "rspec", ">= 2.0.0.beta.19"
   gem.add_development_dependency "bundler", "~> 1.0.0"
   gem.add_development_dependency "jeweler", "~> 1.5.0.pre3"
@@ -42,12 +38,16 @@ end
 
 task :default => :spec
 
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+task :build_code do
+  files = Dir.glob("lib/finchbot*") + Dir.glob("lib/planetwars*") + ["mybot.rb"]
+  puts "Zipping..."
+  system "zip package"+Time.now.to_i.to_s+".zip "+files.join(" ")
+end
 
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "finchbot #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+task :play do
+  system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 log.txt "java -jar example_bots/RandomBot.jar" "ruby mybot.rb"'
+end
+
+task :show do
+  system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 log.txt "java -jar example_bots/RandomBot.jar" "ruby mybot.rb" | java -jar tools/ShowGame.jar'
 end

@@ -1,25 +1,32 @@
 class Fleet
-  attr_reader :owner, :num_ships, :source_planet, 
-    :destination_planet, :total_trip_length, :turns_remaining
- 
-   def initialize(owner, num_ships, source_planet, 
-                 destination_planet, total_trip_length, 
-                 turns_remaining)
+  attr_reader :owner, :num_ships, :source_planet,
+    :destination_planet, :total_trip_length, :turns_remaining, :state
+
+   def initialize(owner, num_ships, source_planet,
+                 destination_planet, total_trip_length,
+                 turns_remaining, state)
     @owner, @num_ships = owner, num_ships
     @source_planet = source_planet
     @destination_planet = destination_planet
     @total_trip_length = total_trip_length
     @turns_remaining = turns_remaining
+    @state = state
   end
 end
 
+# Owner constants
+$FINCH = 1
+$NEUTRAL = 0
+$ENEMY = 2
+
 class Planet
-  attr_reader :planet_id, :growth_rate, :x, :y
+  attr_reader :id, :growth_rate, :x, :y, :state
   attr_accessor :owner, :num_ships
 
-  def initialize(planet_id, owner, num_ships, growth_rate, x, y)
-    @planet_id, @owner, @num_ships = planet_id, owner, num_ships
+  def initialize(id, owner, num_ships, growth_rate, x, y, state)
+    @id, @owner, @num_ships = id, owner, num_ships
     @growth_rate, @x, @y = growth_rate, x, y
+    @state = state
   end
 
   def add_ships(n)
@@ -28,6 +35,10 @@ class Planet
 
   def remove_ships(n)
     @num_ships -= n
+  end
+
+  def incoming_fleets
+    state.fleets.select {|fleet| fleet.destination_planet == self }
   end
 end
 
@@ -88,14 +99,13 @@ class PlanetWars
     return s.join("\n")
   end
 
-  def distance(source_id, destination_id)
-    source = get_planet(source_id)
-    destination = get_planet(destination_id)
+  def distance(source, destination)
     return Math::sqrt( (source.x - destination.x)**2 + (source.y - destination.y)**2 )
   end
 
   def issue_order(source, destination, num_ships)
-    puts "#{source} #{destination} #{num_ships}"
+    puts "#{source.id} #{destination.id} #{num_ships}"
+    source.remove_ships(num_ships)
     STDOUT.flush
   end
 
@@ -116,7 +126,6 @@ class PlanetWars
     planet_id = 0
 
     lines.each do |line|
-      p line
       line = line.split("#")[0]
       tokens = line.split(" ")
       next if tokens.length == 1
@@ -127,17 +136,19 @@ class PlanetWars
                        tokens[4].to_i, # num_ships
                        tokens[5].to_i, # growth_rate
                        tokens[1].to_f, # x
-                       tokens[2].to_f) # y
+                       tokens[2].to_f, # y
+                       self)
         planet_id += 1
         @planets << p
       elsif tokens[0] == "F"
         return 0 if tokens.length != 7
         f = Fleet.new(tokens[1].to_i, # owner
                       tokens[2].to_i, # num_ships
-                      tokens[3].to_i, # source
-                      tokens[4].to_i, # destination
+                      get_planet(tokens[3].to_i), # source
+                      get_planet(tokens[4].to_i), # destination
                       tokens[5].to_i, # total_trip_length
-                      tokens[6].to_i) # turns_remaining
+                      tokens[6].to_i, # turns_remaining
+                      self)
         @fleets << f
       else
         return 0

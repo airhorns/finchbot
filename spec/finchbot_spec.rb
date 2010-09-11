@@ -1,7 +1,50 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Finchbot" do
-  it "fails" do
-    fail "hey buddy, you should probably rename this file and start specing for real"
+  before do
+    @bot = Finch::Bot.new([])
+    state = "P 11.803996 11.215721 1 13 3
+    P 9.319567 21.808874 2 105 5
+    P 14.288424 0.622569 1 11 5
+    P 11.865493 5.273785 0 75 3
+    P 11.742498 17.157658 0 81 3
+    P 4.254093 0.000000 0 22 1
+    P 19.353899 22.431443 0 22 1
+    P 14.743614 22.324001 0 83 3
+    P 8.864377 0.107441 0 83 3
+    P 19.854347 0.711934 0 84 1
+    P 3.753644 21.719509 0 84 1
+    P 8.864814 9.736624 0 12 5
+    P 14.743177 12.694819 0 12 5
+    P 0.000000 10.809889 0 59 2
+    P 23.607991 11.621554 0 59 2
+    P 20.396768 15.522861 0 59 3
+    P 3.211223 6.908581 0 59 3
+    P 17.028748 6.659769 0 4 2
+    P 6.579243 15.771674 0 4 2
+    P 0.782928 19.607505 0 55 1
+    P 22.825064 2.823937 0 55 1
+    P 2.601033 13.172383 0 58 3
+    P 21.006958 9.259059 0 58 3
+    F 2 50 1 14 18 7
+    F 1 25 2 1 22 11
+    F 1 12 2 0 11 1
+    F 1 6 2 1 22 12
+    F 1 5 2 0 11 2
+    F 1 5 2 0 11 3
+    F 1 5 2 0 11 4
+    F 1 5 2 0 11 5
+    F 1 5 2 0 11 6
+    F 1 5 2 0 11 7
+    F 1 5 2 0 11 8
+    F 1 5 2 0 11 9
+    F 1 5 2 0 11 10"
+
+    @pw = PlanetWars.new(state)
+  end
+  describe "angled strategy" do
+    it "should complete it's turn" do
+      @bot.do_turn(@pw).should == true
+    end
   end
 end
