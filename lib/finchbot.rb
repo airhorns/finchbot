@@ -12,35 +12,50 @@ module Finch
     def lookahead
       @lookahead || 5
     end
+
+    def parameter_count
+      6
+    end
   end
 
   class Bot
     attr_reader :parameters
 
     def initialize(parameters)
-      @parameters = decode_parameters(parameters)
+      @parameters = decode_parameters(parameters) if parameters.is_a?(Array)
+      @parameters = parameters if parameters.is_a?(Hash)
     end
 
     def decode_parameters(ps)
-      r = {:angle_weights => {:investment => 2, :attackable => 1, :defense_assist => 2}, :score_threshhold => 1}
+      ps = ps.map(&:to_f)
+      r = {:angle_weights => {:investment => ps[1], :attackable => ps[2], :defendable => ps[3], :defense_assist => ps[4], :crippling => ps[5]}, :score_threshold => ps[0]}
       r[:total_weight] = r[:angle_weights].values.sum
       r
     end
 
     def angled_strategy
-
+      moves = []
       Finch.pw.my_planets.each do |src|
         Finch.pw.planets.each do |dest|
           opinions = []
-          Finch.angles.map(&:new).each do |a|
-            opinions.push((a.opinion(src, dest) || 0) * self.parameters[:angle_weights][a.class.key])
+          reservation = 0
+          Finch.angles.collect{|a| a.new(src,dest) }.each do |a|
+            opinions.push((a.opinion || 0) * self.parameters[:angle_weights][a.class.key])
+            reservation += a.reservation
           end
-          puts "comparing #{src.id} and #{dest.id}, gives #{opinions.join(" ")}"
+#          puts "comparing #{src.id} and #{dest.id}, gives #{opinions.join(" ")} => #{opinions.sum}"
           opinion = opinions.sum
-          if(opinion > self.parameters[:score_threshhold])
-            num_ships = src.num_ships / 2
-            Finch.pw.issue_order(src, dest, num_ships)
+          if(opinion > self.parameters[:score_threshold])
+            moves.push({:source => src, :destination => dest, :score => opinion, :reservation => reservation})
           end
+        end
+        moves.sort_by {|m| m[:score]}
+        moves.each do |move|
+          ships = move[:reservation]
+          if move[:source].num_ships < move[:reservation]
+            ships = move[:source].num_ships - 1
+          end
+          Finch.pw.issue_order(move[:source], move[:destination], ships) if ships > 0
         end
       end
     end

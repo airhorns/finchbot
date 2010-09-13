@@ -1,7 +1,7 @@
 
 module Finch
   class DefenseAssistAngle < Angle
-    def opinion(source, destination)
+    def opinion
       return 0 if destination.owner != $FINCH
 
       attackers = destination.incoming_fleets.inject(Array.new(Finch.lookahead, 0)) do |acc, fleet|

@@ -43,8 +43,9 @@ class Planet
 end
 
 class PlanetWars
-  attr_reader :planets, :fleets
+  attr_reader :planets, :fleets, :calculations
   def initialize(game_state)
+    @calculations = {}
     parse_game_state(game_state)
   end
 

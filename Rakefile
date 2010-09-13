@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'bundler'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -38,8 +40,11 @@ end
 
 task :default => :spec
 
+require 'finchbot'
+require 'darwin'
+
 task :build_code do
-  files = Dir.glob("lib/finchbot*") + Dir.glob("lib/planetwars*") + ["mybot.rb"]
+  files = Dir.glob("lib/finchbot*") + Dir.glob("lib/finchbot/**/*") + Dir.glob("lib/planetwars*") + ["mybot.rb", "parameters.yml"]
   puts "Zipping..."
   system "zip package"+Time.now.to_i.to_s+".zip "+files.join(" ")
 end

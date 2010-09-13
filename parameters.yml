@@ -1,0 +1,8 @@
+---
+angle_weights:
+    attackable : 2
+    defendable: 1
+    investment : 2
+    defense_assist: 1
+    crippling: 1
+score_threshold: 1.5

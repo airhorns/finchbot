@@ -13,6 +13,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'finchbot'
 require 'rspec'
 require 'rspec/autorun'
+require 'active_support/core_ext/hash/indifferent_access'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
