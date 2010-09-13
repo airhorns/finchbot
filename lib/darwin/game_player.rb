@@ -2,14 +2,16 @@ require "open3"
 module Finch
   class GamePlayer
     def play(bot1, bot2, map)
-      str = "java -jar tools/PlayGame.jar #{map} 1000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\""
+      str = "java -jar tools/PlayGame.jar #{map} 1000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\" 2>&1"
       puts str
       output = ""
-      Open3.popen3(str) { |stdin, stdout, stderr|
-        output = stdout.read
-        errors = stderr.read
-        puts errors
+      Open3.popen3(str){|stdin, stdout, stderr|
+        output=stdin.read
+        error_output=stderr.read
+        process=Process.waitpid2(stdin.pid)[1]
       }
+      puts output
+      puts "Playing complete."
       self.parse_output(output)
     end
 

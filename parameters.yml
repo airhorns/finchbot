@@ -5,4 +5,5 @@ angle_weights:
     investment : 2
     defense_assist: 1
     crippling: 1
+    incoming: 1
 score_threshold: 1.5

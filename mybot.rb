@@ -1,27 +1,24 @@
 # FINCHBOT
-
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'logger'
 
 logging_dir = File.join(File.dirname(__FILE__), "logs")
 if File.directory?(logging_dir)
+  # Development Logger
   $log = Logger.new(File.join(logging_dir, "botlog#{Time.now.to_i}.txt"))
+#  $log = Logger.new(STDERR)
   $log.level = Logger::DEBUG
 else
-  $log = Logger.new(STDERR)
+  # Production Logger
+  $log = Logger.new(STDOUT)
   $log.level = Logger::FATAL
 end
 
-$log.info("Finchbot Started")
-
-# Error rescuing and logging code
-begin
-  require 'bundler'
-  Bundler.setup(:default)
+begin # Error rescuing and logging code
+  $log.info("Finchbot Started.")
   require 'finchbot'
   require 'yaml'
   require 'active_support/core_ext/hash/indifferent_access'
-
   $log.debug("Requires present.")
 
   if ARGV.length == Finch.parameter_count
@@ -60,4 +57,5 @@ begin
 rescue => err
   $log.fatal("Caught exception; exiting")
   $log.fatal(err)
+  STDOUT.puts err.message
 end

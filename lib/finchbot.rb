@@ -14,7 +14,7 @@ module Finch
     end
 
     def parameter_count
-      6
+      7
     end
   end
 
@@ -28,7 +28,7 @@ module Finch
 
     def decode_parameters(ps)
       ps = ps.map(&:to_f)
-      r = {:angle_weights => {:investment => ps[1], :attackable => ps[2], :defendable => ps[3], :defense_assist => ps[4], :crippling => ps[5]}, :score_threshold => ps[0]}
+      r = {:angle_weights => {:investment => ps[1], :attackable => ps[2], :defendable => ps[3], :defense_assist => ps[4], :crippling => ps[5], :incoming => ps[6]}, :score_threshold => ps[0]}
       r[:total_weight] = r[:angle_weights].values.sum
       r
     end
