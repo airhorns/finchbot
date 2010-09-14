@@ -1,17 +1,22 @@
-require "open3"
+require "open4"
 module Finch
   class GamePlayer
     def play(bot1, bot2, map)
-      str = "java -jar tools/PlayGame.jar #{map} 1000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\" 2>&1"
-      puts str
-      output = ""
-      Open3.popen3(str){|stdin, stdout, stderr|
-        output=stdin.read
-        error_output=stderr.read
-        process=Process.waitpid2(stdin.pid)[1]
-      }
-      puts output
-      puts "Playing complete."
+      cmd = "java -jar tools/PlayGame.jar #{map} 1000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\" "
+      puts "Running: #{cmd}"
+
+      # pid, stdin, stdout, stderr = Open4::popen4 cmd
+      # ignored, status = Process::waitpid2 pid
+      # puts "pid        : #{ pid }"
+      # output = stdout.read.strip
+      # puts "stdout     : #{ output }"
+      # puts "stderr     : #{ stderr.read.strip }"
+      # puts "status     : #{ status.inspect }"
+      # puts "exitstatus : #{ status.exitstatus }"
+      # puts "Playing complete."
+
+      output = `#{cmd}`
+
       self.parse_output(output)
     end
 

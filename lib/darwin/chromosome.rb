@@ -26,7 +26,7 @@ module Finch
         "java -jar example_bots/#{s}.jar"
       end
 
-      finch = "/Users/hornairs/.rvm/bin/finch_ruby mybot.rb #{self.data.join(" ")}"
+      finch = "ruby mybot.rb #{self.data.join(" ")}"
       scores = []
       maps[0..2].each do |map|
         bots[1..3].each do |bot|
