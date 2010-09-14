@@ -14,7 +14,7 @@ module Finch
     end
 
     def parameter_count
-      7
+      8
     end
   end
 
@@ -28,7 +28,7 @@ module Finch
 
     def decode_parameters(ps)
       ps = ps.map(&:to_f)
-      r = {:angle_weights => {:investment => ps[1], :attackable => ps[2], :defendable => ps[3], :defense_assist => ps[4], :crippling => ps[5], :incoming => ps[6]}, :score_threshold => ps[0]}
+      r = {:angle_weights => {:investment => ps[1], :attackable => ps[2], :defendable => ps[3], :defense_assist => ps[4], :crippling => ps[5], :incoming => ps[6], :battler => ps[7]}, :score_threshold => ps[0]}
       r[:total_weight] = r[:angle_weights].values.sum
       r
     end
@@ -37,6 +37,7 @@ module Finch
       moves = []
       Finch.pw.my_planets.each do |src|
         Finch.pw.planets.each do |dest|
+          next if src == dest
           opinions = []
           reservation = 0
           Finch.angles.collect{|a| a.new(src,dest) }.each do |a|

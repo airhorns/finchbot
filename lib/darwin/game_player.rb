@@ -2,7 +2,7 @@ require "open4"
 module Finch
   class GamePlayer
     def play(bot1, bot2, map)
-      cmd = "java -jar tools/PlayGame.jar #{map} 1000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\" "
+      cmd = "java -jar tools/PlayGame.jar #{map} 5000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\" "
       puts "Running: #{cmd}"
 
       # pid, stdin, stdout, stderr = Open4::popen4 cmd
