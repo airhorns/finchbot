@@ -1,0 +1,21 @@
+defaults: &defaults
+  host: flame.mongohq.com
+  port: 27070
+  username: finchbot
+  password: donthack
+  autocreate_indexes: false
+  allow_dynamic_fields: true
+  include_root_in_json: false
+  parameterize_keys: true
+  persist_in_safe_mode: false
+  raise_not_found_error: true
+  reconnect_time: 3
+
+development:
+  <<: *defaults
+  port: 27090
+  database: finch_develop
+
+production:
+  <<: *defaults
+  database: finch

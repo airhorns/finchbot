@@ -50,11 +50,11 @@ task :build_code do
 end
 
 task :play do
-  system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 log.txt "java -jar example_bots/RandomBot.jar" "/Users/hornairs/.rvm/bin/finch_ruby mybot.rb"'
+  system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 logs/log#{Time.now.to_i}.txt "java -jar example_bots/RageBot.jar" "ruby mybot.rb"'
 end
 
 task :show do
-  system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 log.txt "java -jar example_bots/RandomBot.jar" "/Users/hornairs/.rvm/bin/finch_ruby mybot.rb" | java -jar tools/ShowGame.jar'
+  system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 logs/log#{Time.now.to_i}.txt "java -jar example_bots/RageBot.jar" "ruby mybot.rb" | java -jar tools/ShowGame.jar'
 end
 
 task :test_execution do

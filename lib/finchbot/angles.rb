@@ -32,7 +32,7 @@ module Finch
     end
 
     def reserve_conquering_fleet!
-      reserve(@destination.num_ships)
+      reserve(@destination.num_ships + 1)
     end
   end
 end

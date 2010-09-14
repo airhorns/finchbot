@@ -10,7 +10,7 @@ if File.directory?(logging_dir)
   $log.level = Logger::DEBUG
 else
   # Production Logger
-  $log = Logger.new(STDOUT)
+  $log = Logger.new(STDERR)
   $log.level = Logger::FATAL
 end
 $log.debug "Finchbot Started"

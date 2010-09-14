@@ -1,12 +1,31 @@
 module Finch
+  class Score
+    include Mongoid::Document
+    field :player_1
+    field :player_2
+    field :map
+    field :rating
+    embedded_in :chromosome, :inverse_of => :scores
+  end
+
   class Chromosome
+    include Mongoid::Document
+    Finch.parameters.each do |a|
+      field a, :type => Float
+    end
+    field :fitness
+    field :normalized_fitness
+    field :enqueued, :type => Boolean, :default => false
+    field :complete, :type => Boolean, :default => false
+    embeds_many :scores
 
     attr_accessor :data
-    attr_accessor :normalized_fitness
-    attr_accessor :fitness
 
     def initialize(data)
       @data = data
+      Finch.parameters.each do |p|
+        self[p] = data.pop
+      end
     end
 
     # The fitness method quantifies the optimality of a solution
@@ -16,30 +35,35 @@ module Finch
     # Optimal chromosomes, or at least chromosomes which are more optimal,
     # are allowed to breed and mix their datasets by any of several techniques,
     # producing a new generation that will (hopefully) be even better.
-    def fitness
-      return @fitness if @fitness
+    # Fitness method is provided by Mongoid ORM
+
+    # Method to enqueue the jobs needed to calculate this chromosome's fitness
+    def queue_fitness_calculations
       maps = Array.new(99) do |i|
         "maps/map#{i+1}.txt"
       end
 
-      bots = ["RandomBot", "BullyBot", "DualBot", "ProspectorBot", "RageBot"].collect do |s|
-        "java -jar example_bots/#{s}.jar"
+      bot = Hash.new ["RandomBot", "BullyBot", "DualBot", "ProspectorBot", "RageBot"].collect do |s|
+        [s.intern, "java -jar example_bots/#{s}.jar"]
       end
 
       finch = "ruby mybot.rb #{self.data.join(" ")}"
       scores = []
       maps[0..2].each do |map|
-        bots[1..3].each do |bot|
-          scores.push GamePlayer.new.play(bot, finch, map)
+        bots[1..3].each do |bot, command|
+          s = self.create_score(bot, :finch, map)
+          Resque.enque(GamePlayer, command, finch, map, s.id)
         end
       end
 
-      @fitness = scores.sum / scores.length
-      return @fitness
+      self.enqueued = true
+      self.save
     end
+
 
     def self.mutate(chromosome)
       if chromosome.normalized_fitness && rand < ((1 - chromosome.normalized_fitness) * 0.3)
+        mutant = self.new
         data = chromosome.data
         index = rand(data.length-1)
         data[index] = data[index] + ((rand - 0.5) * data[index])
@@ -52,7 +76,7 @@ module Finch
       data_size = Finch.parameter_count-2
       crossover = rand(data_size)
       spawn = a.data[0..crossover] + b.data[crossover+1..-1]
-      return self.class.new(spawn)
+      return self.new(spawn)
     end
 
     # Initializes an individual solution (chromosome) for the initial
@@ -64,30 +88,6 @@ module Finch
         rand
       end
       return Chromosome.new(seed)
-    end
-  end
-end
-
-module Ai4r
-  module GeneticAlgorithm
-    class GeneticSearch
-      def generate_initial_population
-       @population = []
-       @population_size.times do
-         population << Finch::Chromosome.seed
-       end
-      end
-
-      def reproduction(selected_to_breed)
-        offsprings = []
-        0.upto(selected_to_breed.length/2-1) do |i|
-          offsprings << Finch::Chromosome.reproduce(selected_to_breed[2*i], selected_to_breed[2*i+1])
-        end
-        @population.each do |individual|
-          Finch::Chromosome.mutate(individual)
-        end
-        return offsprings
-      end
     end
   end
 end
