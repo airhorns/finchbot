@@ -16,6 +16,7 @@ GEM
     bson (1.0.4)
     bson_ext (1.0.4)
     builder (2.1.2)
+    columnize (0.3.1)
     diff-lcs (1.1.2)
     git (1.2.5)
     haml (3.0.18)
@@ -25,9 +26,9 @@ GEM
       git (>= 1.2.5)
       rake
     json (1.4.6)
+    linecache (0.43)
     mongo (1.0.7)
       bson (>= 1.0.4)
-    mongo_ext (0.19.3)
     mongoid (2.0.0.beta.17)
       activemodel (~> 3.0.0)
       bson (= 1.0.4)
@@ -55,12 +56,13 @@ GEM
     rspec-mocks (2.0.0.beta.22)
       rspec-core (= 2.0.0.beta.22)
       rspec-expectations (= 2.0.0.beta.22)
+    ruby-debug (0.10.3)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.3.0)
+    ruby-debug-base (0.10.3)
+      linecache (>= 0.3)
     sinatra (1.0)
       rack (>= 1.0)
-    sinatra-mongoid (0.0.2)
-      mongo_ext
-      mongoid
-      sinatra
     tzinfo (0.3.23)
     vegas (0.1.7)
       rack (>= 1.0.0)
@@ -82,6 +84,6 @@ DEPENDENCIES
   rcov
   resque
   rspec (>= 2.0.0.beta.20)
+  ruby-debug
   sinatra
-  sinatra-mongoid
   yajl-ruby

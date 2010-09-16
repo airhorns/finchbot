@@ -42,6 +42,8 @@ task :default => :spec
 
 require 'finchbot'
 require 'darwin'
+require 'darwin/tasks'
+require 'ruby-debug'
 
 task :build_code do
   files = Dir.glob("lib/finchbot*") + Dir.glob("lib/finchbot/**/*") + Dir.glob("lib/planetwars*") + ["mybot.rb", "parameters.yml"]
@@ -60,4 +62,10 @@ end
 task :test_execution do
   system 'java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 log.txt "java -jar example_bots/ProspectorBot.jar" "java -jar example_bots/RageBot.jar"'
 #  Finch::GamePlayer.new.play("java -jar example_bots/ProspectorBot.jar", "java -jar example_bots/RageBot.jar", "maps/map1.txt")
+end
+
+task :console do
+  require 'irb'
+  ARGV.clear
+  IRB.start
 end

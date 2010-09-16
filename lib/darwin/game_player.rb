@@ -1,7 +1,9 @@
 require "open4"
 module Finch
   class GamePlayer
-    def perform(bot1, bot2, map, id)
+    @queue = :games
+
+    def self.perform(bot1, bot2, map, id)
       cmd = "java -jar tools/PlayGame.jar #{map} 5000 1000 logs/log#{Time.now.to_i}.txt \"#{bot1}\" \"#{bot2}\" "
       puts "Running: #{cmd}"
 
@@ -22,7 +24,7 @@ module Finch
       s.update_attributes!(:rating => score)
     end
 
-    def parse_output(string)
+    def self.parse_output(string)
       if string.match("WARNING: player 2 timed out")
         return -1001
       else

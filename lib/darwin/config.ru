@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../'
 require 'darwin'
+require 'darwin/app'
 require 'resque/server'
 
 use Rack::ShowExceptions

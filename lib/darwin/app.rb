@@ -1,8 +1,6 @@
 require 'sinatra/base'
 require 'resque'
 require 'haml'
-require 'job'
-require 'sinatra/mongoid'
 
 module Finch
   class App < Sinatra::Base

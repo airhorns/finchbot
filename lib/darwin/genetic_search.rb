@@ -16,11 +16,21 @@ module Ai4r
     #     - Population
     class DistributedGeneticSearch
 
-      attr_accessor :population
-      def initialize(initial_population_size, generations)
-        @population_size = initial_population_size
-        @max_generation = generations
-        @generation = 0
+      # Remote retrieval methods
+      def population
+        @population ||= Finch::Chromosome.all(:conditions => {:deceased => false})
+        @population
+      end
+
+      def population_size
+        self.population.length
+      end
+
+      # Enqueue all the Resque jobs to evaluate this population
+      def evaluate_generation
+        self.population.each do |chromosome|
+          chromosome.calculate_fitness!
+        end
       end
 
       #     1. Choose initial population
@@ -32,22 +42,19 @@ module Ai4r
       #           4. Replace worst ranked part of population with offspring
       #     4. Until termination
       #     5. Return the best chromosome
-      def run
-        generate_initial_population                    #Generate initial population
-        @max_generation.times do
-          selected_to_breed = selection                #Evaluates current population
-          offsprings = reproduction selected_to_breed  #Generate the population for this new generation
-          replace_worst_ranked offsprings
-        end
+      def advance_generation
+        selected_to_breed = selection                #Evaluates current population
+        offsprings = reproduction selected_to_breed  #Generate the population for this new generation
+        replace_worst_ranked offsprings
         return best_chromosome
       end
 
 
-      def generate_initial_population
-       @population = []
-       @population_size.times do
-         population << Finch::Chromosome.seed
-       end
+      def generate_initial_population(size)
+        size.times do
+          Finch::Chromosome.seed.save!
+        end
+        evaluate_generation
       end
 
       # Select best-ranking individuals to reproduce
@@ -67,20 +74,20 @@ module Ai4r
       # 5. The selected individual is the first one whose accumulated normalized value (its is normalized value plus the normalized values of the chromosomes prior it) greater than R.
       # 6. We repeat steps 4 and 5, 2/3 times the population size.
       def selection
-        @population.sort! { |a, b| b.fitness <=> a.fitness}
-        best_fitness = @population[0].fitness
-        worst_fitness = @population.last.fitness
+        pop = self.population.sort! { |a, b| b.fitness <=> a.fitness}
+        best_fitness = pop[0].fitness
+        worst_fitness = pop.last.fitness
         acum_fitness = 0
         if best_fitness-worst_fitness > 0
-        @population.each do |chromosome|
+        self.population.each do |chromosome|
           chromosome.normalized_fitness = (chromosome.fitness - worst_fitness)/(best_fitness-worst_fitness)
           acum_fitness += chromosome.normalized_fitness
         end
         else
-          @population.each { |chromosome| chromosome.normalized_fitness = 1}
+          self.population.each { |chromosome| chromosome.normalized_fitness = 1}
         end
         selected_to_breed = []
-        ((2*@population_size)/3).times do
+        ((2*self.population_size)/3).times do
           selected_to_breed << select_random_individual(acum_fitness)
         end
         selected_to_breed
@@ -99,7 +106,7 @@ module Ai4r
         0.upto(selected_to_breed.length/2-1) do |i|
           offsprings << Finch::Chromosome.reproduce(selected_to_breed[2*i], selected_to_breed[2*i+1])
         end
-        @population.each do |individual|
+        self.population.each do |individual|
           Finch::Chromosome.mutate(individual)
         end
         return offsprings
@@ -108,13 +115,13 @@ module Ai4r
       # Replace worst ranked part of population with offspring
       def replace_worst_ranked(offsprings)
         size = offsprings.length
-        @population = @population [0..((-1*size)-1)] + offsprings
+        self.population = self.population [0..((-1*size)-1)] + offsprings
       end
 
       # Select the best chromosome in the population
       def best_chromosome
-        the_best = @population[0]
-        @population.each do |chromosome|
+        the_best = self.population[0]
+        self.population.each do |chromosome|
           the_best = chromosome if chromosome.fitness > the_best.fitness
         end
         return the_best
@@ -124,7 +131,7 @@ module Ai4r
       def select_random_individual(acum_fitness)
         select_random_target = acum_fitness * rand
         local_acum = 0
-        @population.each do |chromosome|
+        self.population.each do |chromosome|
           local_acum += chromosome.normalized_fitness
           return chromosome if local_acum >= select_random_target
         end
