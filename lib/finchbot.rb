@@ -31,8 +31,8 @@ module Finch
 
     def decode_parameters(ps)
       ps = ps.map(&:to_f)
-      r = {self.class.parameters.last => ps.pop, :angle_weights => {}}
-      self.class.parameters[0..-1].each do |a|
+      r = {Finch.parameters.last => ps.pop, :angle_weights => {}}
+      Finch.parameters[0..-2].each do |a|
         r[:angle_weights][a] = ps.pop
       end
       r[:total_weight] = r[:angle_weights].values.sum

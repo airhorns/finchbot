@@ -3,7 +3,7 @@ require 'darwin/game_player'
 
 describe "Finch::GamePlayer" do
   before do
-    @player = Finch::GamePlayer.new
+    @player = Finch::GamePlayer
   end
   it "should successfuly parse errors" do
     output = "WARNING: player 2 timed out.
