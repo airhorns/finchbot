@@ -5,8 +5,8 @@ require 'logger'
 logging_dir = File.join(File.dirname(__FILE__), "logs")
 if File.directory?(logging_dir)
   # Development Logger
-  $log = Logger.new(File.join(logging_dir, "botlog#{Time.now.to_i}.txt"))
-#  $log = Logger.new(STDERR)
+#  $log = Logger.new(File.join(logging_dir, "botlog#{Time.now.to_i}.txt"))
+  $log = Logger.new(STDERR)
   $log.level = Logger::DEBUG
 else
   # Production Logger
