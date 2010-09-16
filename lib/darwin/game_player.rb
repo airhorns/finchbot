@@ -5,6 +5,8 @@ module Finch
     @queue = :games
     @max_turn_length = 600
     def self.perform(bot1, bot2, map, id)
+      puts Finch::Chromosome.find(id)
+      return true
       SystemTimer.timeout_after((@max_turn_length+15).seconds) do
         cmd = "java -jar tools/PlayGame.jar #{map} 5000 #{@max_turn_length} logs/log.txt \"#{bot1}\" \"#{bot2}\""
         puts "Running: #{cmd}"
