@@ -102,8 +102,7 @@ module Finch
       scores = []
       maps[0..2].each do |map|
         bots.each do |bot, command|
-          s = self.scores.create!(:player1 => bot, :player2 => :finch, :map => map)
-          Resque.enqueue(GamePlayer, command, finch, map, s.id)
+          Resque.enqueue(GamePlayer, command, finch, map, self.id)
         end
       end
 

@@ -20,8 +20,8 @@ module Finch
       output = `#{cmd}`
 
       score = self.parse_output(output)
-      s = Finch::Score.find(id)
-      s.update_attributes!(:rating => score)
+      s = Finch::Chromosome.find(id)
+      s.scores.create!(:rating => score, :player1 => bot1, :player2 => bot2, :map => map)
     end
 
     def self.parse_output(string)
