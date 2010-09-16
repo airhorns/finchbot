@@ -3,10 +3,10 @@ require 'system_timer'
 module Finch
   class GamePlayer
     @queue = :games
-
+    @max_turn_length = 600
     def self.perform(bot1, bot2, map, id)
-      SystemTimer.timeout_after(1200.seconds) do
-        cmd = "java -jar tools/PlayGame.jar #{map} 5000 1000 logs/log.txt \"#{bot1}\" \"#{bot2}\""
+      SystemTimer.timeout_after((@max_turn_length+15).seconds) do
+        cmd = "java -jar tools/PlayGame.jar #{map} 5000 #{@max_turn_length} logs/log.txt \"#{bot1}\" \"#{bot2}\""
         puts "Running: #{cmd}"
 
         pid, stdin, stdout, stderr = Open4::popen4 cmd
@@ -22,7 +22,7 @@ module Finch
 
     def self.parse_output(string)
       if string.match("WARNING: player 2 timed out")
-        return -1001
+        return -1 * (@max_turn_length + 1)
       else
         turns = string.scan(/Turn \d{1,3}/).length
         if string.match("Player 2 Wins!")
@@ -30,7 +30,7 @@ module Finch
         else
           winner = -1
         end
-        return (1000 - turns) * winner
+        return (@max_turn_length - turns) * winner
       end
     end
   end
