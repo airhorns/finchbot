@@ -43,7 +43,6 @@ task :default => :spec
 require 'finchbot'
 require 'darwin'
 require 'darwin/tasks'
-require 'ruby-debug'
 
 task :build_code do
   files = Dir.glob("lib/finchbot*") + Dir.glob("lib/finchbot/**/*") + Dir.glob("lib/planetwars*") + ["mybot.rb", "parameters.yml"]
