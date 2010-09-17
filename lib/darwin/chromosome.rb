@@ -55,6 +55,14 @@ module Finch
         end
         return Chromosome.new(seed)
       end
+
+      def alive
+        criteria.where(:deceased => false)
+      end
+
+      def without_calculated_fitness
+        criteria.where(:fitness => nil)
+      end
     end
 
     def initialize(data = nil)
@@ -85,22 +93,22 @@ module Finch
     # Fitness method is an attribute provided by Mongoid ORM
 
     def calculate_fitness!
-      queue_fitness_calculations if self.fitness.nil?
+      queue_fitness_games if self.fitness.nil?
     end
 
     # Method to enqueue the jobs needed to calculate this chromosome's fitness
-    def queue_fitness_calculations
+    def queue_fitness_games
       maps = Array.new(99) do |i|
         "maps/map#{i+1}.txt"
       end
 
-      bots = Hash[["RandomBot", "BullyBot", "DualBot", "ProspectorBot", "RageBot"].collect do |s|
+      bots = Hash[["BullyBot", "DualBot", "ProspectorBot", "RageBot"].collect do |s|
         [s.intern, "java -jar example_bots/#{s}.jar"]
       end]
 
       finch = "ruby mybot.rb #{self.data.join(" ")}"
       scores = []
-      maps[0..2].each do |map|
+      maps[0..4].each do |map|
         bots.each do |bot, command|
           Resque.enqueue(GamePlayer, command, finch, map, self.id.to_s)
         end
@@ -110,6 +118,9 @@ module Finch
       self.save
     end
 
+    def queue_fitness_calculations
+      Resque.enqueue(FitnessCalculator, self.id.to_s)
+    end
     def kill!
       self.update_attributes!(:deceased => true)
     end

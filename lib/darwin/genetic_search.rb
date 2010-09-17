@@ -43,8 +43,8 @@ module Ai4r
       #     4. Until termination
       #     5. Return the best chromosome
       def advance_generation
-        selected_to_breed = selection                #Evaluates current population
-        offsprings = reproduction selected_to_breed  #Generate the population for this new generation
+        selected_to_breed = selection                # Evaluates current population
+        offsprings = reproduction selected_to_breed  # Generate the population for this new generation
         replace_worst_ranked offsprings
         return best_chromosome
       end

@@ -4,6 +4,7 @@ require 'mongoid'
 require 'darwin/chromosome'
 require 'darwin/genetic_search'
 require 'darwin/game_player'
+require 'darwin/fitness_calculator'
 require 'resque'
 
 ENV['RACK_ENV'] ||= "development"
