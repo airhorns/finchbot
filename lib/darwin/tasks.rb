@@ -34,7 +34,7 @@ task :check_generation do
 end
 
 desc "Restart Resque workers"
-task :restart_workers do
+task :kill_workers do
   pids = Resque.workers.map do |worker|
     worker.worker_pids
   end.flatten.uniq
