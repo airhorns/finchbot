@@ -33,14 +33,11 @@ task :check_generation do
   end
 end
 
-namespace :resque do
-  desc "Restart Resque workers"
-  task :restart do
-    pids = Resque.workers.map do |worker|
-      worker.worker_pids
-    end.flatten.uniq
+desc "Restart Resque workers"
+task :restart_workers do
+  pids = Resque.workers.map do |worker|
+    worker.worker_pids
+  end.flatten.uniq
 
-    system("kill -QUIT #{pids.join(' ')}")
-  end
-
+  system("kill -QUIT #{pids.join(' ')}")
 end

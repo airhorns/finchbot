@@ -3,7 +3,7 @@ require 'bundler'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
 
 begin
-  Bundler.setup(:default, :development)
+  Bundler.setup(:default, :development, :darwin)
 rescue Bundler::BundlerError => e
   $stderr.puts e.message
   $stderr.puts "Run `bundle install` to install missing gems"

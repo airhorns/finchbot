@@ -51,6 +51,7 @@ GEM
     net-ssh-gateway (1.0.1)
       net-ssh (>= 1.99.1)
     rack (1.2.1)
+    railsless-deploy (1.0.2)
     rake (0.8.7)
     rcov (0.9.9)
     redis (2.0.8)
@@ -98,6 +99,7 @@ DEPENDENCIES
   jeweler (~> 1.5.0.pre3)
   mongoid (= 2.0.0.beta.17)
   open4!
+  railsless-deploy
   rcov
   resque
   rspec (>= 2.0.0.beta.20)

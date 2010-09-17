@@ -10,7 +10,9 @@ group :development do
   gem "bundler", "~> 1.0.0"
   gem "jeweler", "~> 1.5.0.pre3"
   gem "rcov", ">= 0"
+end
 
+group :darwin do
   # Darwin
   gem "ai4r"
   gem "open4", :git => "http://github.com/ahoward/open4.git"
@@ -22,4 +24,5 @@ group :development do
   gem "bson_ext", "1.0.4"
   gem "SystemTimer"
   gem "capistrano"
+  gem "railsless-deploy", :require => nil
 end

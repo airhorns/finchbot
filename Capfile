@@ -1,14 +1,26 @@
+set :application, "finchbot"
 require 'bundler/capistrano'
 load 'deploy' if respond_to?(:namespace)
+require 'railsless-deploy'
 
 set :scm, :git
 set :deploy_via, :remote_cache
 set :repository, "git@github.com:hornairs/finchbot.git"
 set :deploy_to, "~/finchbot"
 set :use_sudo, false
-role :workers, "hornairs@tarmac.skylightlabs.ca:2234", "hornairs@scurvvy.info:2234", "bitnami@ec2-184-72-210-109.compute-1.amazonaws.com"
+server "hornairs@tarmac.skylightlabs.ca:2234", :web, :workers
+server "hornairs@scurvvy.info:2234", :workers
+server "bitnami@ec2-184-72-210-109.compute-1.amazonaws.com", :web, :workers, {:brute => true}
 
 
 
-task :restart_workers do
+after "deploy", "resque:restart"
+
+namespace :resque do
+  task :restart, :roles => [:workers]  do
+    run "cd #{current_path} && rake kill_workers"
+    run "cd #{current_path} && QUEUE=* rake resque:work && true", :except => { :brute => true }
+    run "cd #{current_path} && COUNT=4 QUEUE=* rake resque:workers && true", :only => { :brute => true }
+  end
 end
+
