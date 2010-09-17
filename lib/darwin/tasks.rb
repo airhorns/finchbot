@@ -39,5 +39,5 @@ task :kill_workers do
     worker.worker_pids
   end.flatten.uniq
 
-  system("kill -QUIT #{pids.join(' ')}")
+  system("kill -n 3 #{pids.join(' ')}")
 end
