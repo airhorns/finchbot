@@ -26,7 +26,7 @@ task :check_generation do
       # All fitness calculations are complete! Do the next generation
       search = Ai4r::GeneticAlgorithm::DistributedGeneticSearch.new
       search.advance_generation
-      search.evaluate_generation
+      # search.evaluate_generation
     end
   else
     return

@@ -4,7 +4,7 @@ module Finch
     field :player_1
     field :player_2
     field :map
-    field :rating
+    field :rating, :type => Float
     embedded_in :chromosome, :inverse_of => :scores, :class_name => "Finch::Chromosome"
   end
 
@@ -14,7 +14,7 @@ module Finch
       field a, :type => Float
     end
     field :deceased, :type => Boolean, :default => false
-    field :fitness
+    field :fitness, :type => Float
     field :normalized_fitness
     field :enqueued, :type => Boolean, :default => false
     field :complete, :type => Boolean, :default => false

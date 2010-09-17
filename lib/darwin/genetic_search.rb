@@ -74,7 +74,7 @@ module Ai4r
       # 5. The selected individual is the first one whose accumulated normalized value (its is normalized value plus the normalized values of the chromosomes prior it) greater than R.
       # 6. We repeat steps 4 and 5, 2/3 times the population size.
       def selection
-        pop = self.population.sort! { |a, b| b.fitness <=> a.fitness}
+        pop = self.population.sort { |a, b| b.fitness.to_f <=> a.fitness.to_f }
         best_fitness = pop[0].fitness
         worst_fitness = pop.last.fitness
         acum_fitness = 0
