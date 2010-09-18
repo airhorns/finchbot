@@ -19,8 +19,8 @@ after "deploy", "resque:restart"
 namespace :resque do
   task :restart, :roles => [:workers]  do
     run "cd #{current_path} && rake kill_workers"
-    run "cd #{current_path} && QUEUE=* nohup rake resque:work && true", :except => { :brute => true }
-    run "cd #{current_path} && COUNT=4 QUEUE=* nohup rake resque:workers && true", :only => { :brute => true }
+    run "cd #{current_path} && QUEUE=* nohup rake resque:work &", :except => { :brute => true }
+    run "cd #{current_path} && COUNT=4 QUEUE=* nohup rake resque:workers &", :only => { :brute => true }
   end
 end
 

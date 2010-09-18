@@ -15,7 +15,7 @@ module Finch
     end
     field :deceased, :type => Boolean, :default => false
     field :fitness, :type => Float
-    field :normalized_fitness
+    field :normalized_fitness, :type => Float
     field :enqueued, :type => Boolean, :default => false
     field :complete, :type => Boolean, :default => false
     embeds_many :scores, :class_name => "Finch::Score"
@@ -23,13 +23,13 @@ module Finch
     class << self
       def mutate(chromosome)
         if chromosome.normalized_fitness && rand < ((1 - chromosome.normalized_fitness) * 0.3)
-          mutant = self.new
           data = chromosome.data
           index = rand(data.length-1)
           data[index] = data[index] + ((rand - 0.5) * data[index])
-          mutant.data = data
+          mutant = self.new(data)
           mutant.fitness = nil
           chromosome.kill!
+          mutant.save!
           return mutant
         end
         return chromosome
@@ -39,10 +39,9 @@ module Finch
         data_size = Finch.parameter_count-2
         crossover = rand(data_size)
         spawn = a.data[0..crossover] + b.data[crossover+1..-1]
-        [a, b].each do |c|
-          c.kill!
-        end
-        return self.new(spawn)
+        x = self.new(spawn)
+        x.save!
+        return x
       end
 
       # Initializes an individual solution (chromosome) for the initial
@@ -58,6 +57,10 @@ module Finch
 
       def alive
         criteria.where(:deceased => false)
+      end
+
+      def dead
+        criteria.where(:deceased => true)
       end
 
       def without_calculated_fitness
@@ -121,6 +124,7 @@ module Finch
     def queue_fitness_calculations
       Resque.enqueue(FitnessCalculator, self.id.to_s)
     end
+
     def kill!
       self.update_attributes!(:deceased => true)
     end

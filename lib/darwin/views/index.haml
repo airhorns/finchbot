@@ -1,0 +1,28 @@
+.info
+  %ul
+    %li
+      Current Population
+      = Finch::Chromosome.alive.length
+    %li
+      Dead
+      = Finch::Chromosome.dead.length
+    %li
+      Total Population
+      = Finch::Chromosome.all.length
+
+.chromosomes
+  %table
+    %tr
+      %th ID
+      %th Deceased?
+      %th Fitness
+      %th Games Played
+      %th Complete
+
+    - @chromosomes.each do |x|
+      %tr
+        %td= x.id.to_s
+        %td= x.deceased
+        %td= x.fitness
+        %td= x.scores.length
+        %td= x.complete

@@ -18,7 +18,7 @@ module Ai4r
 
       # Remote retrieval methods
       def population
-        @population ||= Finch::Chromosome.all(:conditions => {:deceased => false})
+        @population ||= Finch::Chromosome.alive
         @population
       end
 
@@ -28,7 +28,7 @@ module Ai4r
 
       # Enqueue all the Resque jobs to evaluate this population
       def evaluate_generation
-        self.population.each do |chromosome|
+        Finch::Chromosome.all(:conditions => {:deceased => false}).each do |chromosome|
           chromosome.calculate_fitness!
         end
       end
@@ -75,13 +75,14 @@ module Ai4r
       # 6. We repeat steps 4 and 5, 2/3 times the population size.
       def selection
         pop = self.population.sort { |a, b| b.fitness.to_f <=> a.fitness.to_f }
-        best_fitness = pop[0].fitness
-        worst_fitness = pop.last.fitness
+        @population = pop
+        best_fitness = pop[0].fitness.to_f
+        worst_fitness = pop.last.fitness.to_f
         acum_fitness = 0
         if best_fitness-worst_fitness > 0
         self.population.each do |chromosome|
-          chromosome.normalized_fitness = (chromosome.fitness - worst_fitness)/(best_fitness-worst_fitness)
-          acum_fitness += chromosome.normalized_fitness
+          chromosome.normalized_fitness = (chromosome.fitness.to_f - worst_fitness)/(best_fitness-worst_fitness)
+          acum_fitness += chromosome.normalized_fitness.to_f
         end
         else
           self.population.each { |chromosome| chromosome.normalized_fitness = 1}
@@ -115,13 +116,16 @@ module Ai4r
       # Replace worst ranked part of population with offspring
       def replace_worst_ranked(offsprings)
         size = offsprings.length
-        self.population = self.population [0..((-1*size)-1)] + offsprings
+        Finch::Chromosome.alive.order_by([:fitness, :asc]).limit(size).each do |chromosome|
+          chromosome.kill!
+        end
+        @population = Finch::Chromosome.alive
       end
 
       # Select the best chromosome in the population
       def best_chromosome
         the_best = self.population[0]
-        self.population.each do |chromosome|
+        self.population.reject{|x| x.fitness.nil? }.each do |chromosome|
           the_best = chromosome if chromosome.fitness > the_best.fitness
         end
         return the_best

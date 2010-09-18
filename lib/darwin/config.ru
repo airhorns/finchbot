@@ -1,5 +1,13 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../'
+require 'bundler'
+begin
+  Bundler.setup(:default, :development, :darwin)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
 require 'darwin'
 require 'darwin/app'
 require 'resque/server'
