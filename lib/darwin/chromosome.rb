@@ -96,7 +96,7 @@ module Finch
     # Fitness method is an attribute provided by Mongoid ORM
 
     def calculate_fitness!
-      queue_fitness_games if self.fitness.nil?
+      queue_fitness_games if self.fitness.nil? && self.enqueued == false
     end
 
     # Method to enqueue the jobs needed to calculate this chromosome's fitness

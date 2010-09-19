@@ -17,6 +17,7 @@
       %th Deceased?
       %th Fitness
       %th Games Played
+      %th Enqueued
       %th Complete
 
     - @chromosomes.each do |x|
@@ -25,4 +26,5 @@
         %td= x.deceased
         %td= x.fitness
         %td= x.scores.length
+        %td= x.enqueued
         %td= x.complete

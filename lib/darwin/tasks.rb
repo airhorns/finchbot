@@ -18,6 +18,12 @@ task :recalculate_fitness do
     c.queue_fitness_calculations
   end
 end
+
+task :evaluate_generation do
+  search = Ai4r::GeneticAlgorithm::DistributedGeneticSearch.new
+  search.evaluate_generation
+end
+
 task :check_generation do
   if Resque.size("games") == 0
     # All games complete for this generation.
@@ -36,6 +42,23 @@ task :check_generation do
   end
 end
 
+task :temp_clean do
+  Finch::Chromosome.where(:complete => false).each do |c|
+    if c.scores.length > 10
+      c.complete = true
+      c.enqueued = true
+      c.save!
+    end
+  end
+
+  Finch::Chromosome.where(:enqueued => false).each do |c|
+    if c.scores.length < 10
+      c.queue_fitness_games
+    end
+    c.enqueued = true
+    c.save!
+  end
+end
 desc "Restart Resque workers"
 task :kill_workers do
   pids = Resque.workers.map do |worker|
