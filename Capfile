@@ -14,7 +14,7 @@ server "bitnami@ec2-184-72-210-109.compute-1.amazonaws.com", :web, :workers, {:b
 
 
 
-after "deploy", "resque:restart"
+#after "deploy", "resque:restart"
 
 namespace :resque do
   task :restart, :roles => [:workers]  do
