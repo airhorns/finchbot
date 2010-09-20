@@ -37,8 +37,6 @@ task :check_generation do
       search.advance_generation
       search.evaluate_generation
     end
-  else
-    return
   end
 end
 
@@ -50,15 +48,27 @@ task :temp_clean do
       c.save!
     end
   end
-
-  Finch::Chromosome.where(:enqueued => false).each do |c|
-    if c.scores.length < 10
-      c.queue_fitness_games
-    end
-    c.enqueued = true
-    c.save!
-  end
+  # 
+  # Finch::Chromosome.where(:enqueued => false).each do |c|
+  #   if c.scores.length < 10
+  #     c.queue_fitness_games
+  #   end
+  #   c.enqueued = true
+  #   c.save!
+  # end
+  
+  # Finch::Chromosome.where(:fitness => nil).each do |c|
+  #   if c.scores.length > 10
+  #     c.queue_fitness_calculations
+  #     c.complete = true
+  #   else
+  #     c.queue_fitness_games
+  #   end
+  #   c.enqueued = true
+  #   c.save!
+  # end
 end
+
 desc "Restart Resque workers"
 task :kill_workers do
   pids = Resque.workers.map do |worker|
